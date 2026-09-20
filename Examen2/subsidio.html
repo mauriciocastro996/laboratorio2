@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Combustibles en Subsidio</title>
+    <link rel="stylesheet" href="estilos.css">   
+</head>
+
+<body>
+
+    <div class="contenedor">
+
+        <h1>Control de la ventas de Combustibles</h1>
+
+        <div class="formulario">
+
+            <label for="combustible">
+                Tipo de combustible:
+            </label>
+
+            <select id="combustible">
+                <option value="Regular">Regular</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Superior">Super</option>
+            </select>
+
+
+            <label for="galones">
+                Cantidad de galones:
+            </label>
+
+            <input
+                type="number"
+                id="galones"
+                min="1"
+                
+                placeholder="Ingrese los galones vendidos"
+            >
+
+
+            <button onclick="registrarVenta()">
+                Registrar venta
+            </button>
+
+        </div>
+
+
+        <h2>Ventas registradas</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Combustible</th>
+                    <th>Galones</th>
+                    <th>Precio</th>
+                    <th>Subsidio</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody id="tablaVentas">
+
+            </tbody>
+
+        </table>
+
+
+        <div class="resultados">
+
+            <h2>Resumen del dia</h2>
+
+            <p>
+                Galones de Super:
+                <strong id="galonesSuperior">0</strong>
+            </p>
+
+            <p>
+                Galones de Regular:
+                <strong id="galonesRegular">0</strong>
+            </p>
+
+            <p>
+                Galones de Diesel:
+                <strong id="galonesDiesel">0</strong>
+            </p>
+
+            <hr>
+
+            <p>
+                Ventas Super:
+                <strong id="ventaSuperior">Q0.00</strong>
+            </p>
+
+            <p>
+                Ventas Regular:
+                <strong id="ventaRegular">Q0.00</strong>
+            </p>
+
+            <p>
+                Ventas Diesel:
+                <strong id="ventaDiesel">Q0.00</strong>
+            </p>
+
+            <hr>
+
+            <p>
+                Galones subsidiados:
+                <strong id="galonesSubsidio">0</strong>
+            </p>
+
+            <p>
+                Total de subsidio:
+                <strong id="totalSubsidio">Q0.00</strong>
+            </p>
+
+            <p class="total">
+                TOTAL GENERAL:
+                <span id="totalGeneral">Q0.00</span>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+
+
+        const precios = {
+
+            Superior: {
+                referencia: 32.82,
+                subsidio: 5.00,
+                sinSubsidio: 37.82
+            },
+
+            Regular: {
+                referencia: 31.57,
+                subsidio: 5.00,
+                sinSubsidio: 36.57
+            },
+
+            Diesel: {
+                referencia: 29.75,
+                subsidio: 7.00,
+                sinSubsidio: 36.75
+            }
+
+        };
+
+
+    
+
+        let galonesSuperior = 0;
+        let galonesRegular = 0;
+        let galonesDiesel = 0;
+
+        let ventaSuperior = 0;
+        let ventaRegular = 0;
+        let ventaDiesel = 0;
+
+        let galonesSubsidio = 0;
+        let totalSubsidio = 0;
+
+        let totalGeneral = 0;
+
+
+        function registrarVenta() {
+
+            
+
+            let combustible =
+                document.getElementById("combustible").value;
+
+            let galones =
+                parseFloat(
+                    document.getElementById("galones").value
+                );
+
+
+          
+
+            if (isNaN(galones) || galones <= 0) {
+
+                alert("Ingrese una cantidad válida de galones.");
+
+                return;
+            }
+
+
+            
+
+            let datos = precios[combustible];
+
+            let precioVenta;
+            let subsidioAplicado;
+            let total;
+
+
+            if (galones <= 50) {
+
+                precioVenta = datos.referencia;
+
+                subsidioAplicado =
+                    datos.subsidio * galones;
+
+                galonesSubsidio += galones;
+
+                totalSubsidio += subsidioAplicado;
+
+                total = precioVenta * galones;
+
+            } else {
+
+                precioVenta = datos.sinSubsidio;
+
+                subsidioAplicado = 0;
+
+                total = precioVenta * galones;
+
+            }
+
+
+            
+
+            if (combustible === "Superior") {
+
+                galonesSuperior += galones;
+
+                ventaSuperior += total;
+
+            }
+
+
+            else if (combustible === "Regular") {
+
+                galonesRegular += galones;
+
+                ventaRegular += total;
+
+            }
+
+
+            else if (combustible === "Diesel") {
+
+                galonesDiesel += galones;
+
+                ventaDiesel += total;
+
+            }
+
+
+
+            totalGeneral += total;
+
+
+         
+
+            let tabla =
+                document.getElementById("tablaVentas");
+
+            let fila = tabla.insertRow();
+
+
+            fila.insertCell(0).innerHTML =
+                combustible;
+
+
+            fila.insertCell(1).innerHTML =
+                galones.toFixed(2);
+
+
+            fila.insertCell(2).innerHTML =
+                "Q" + precioVenta.toFixed(2);
+
+
+            if (subsidioAplicado > 0) {
+
+                fila.insertCell(3).innerHTML =
+                    '<span class="con-subsidio">Q' +
+                    subsidioAplicado.toFixed(2) +
+                    '</span>';
+
+            } else {
+
+                fila.insertCell(3).innerHTML =
+                    '<span class="sin-subsidio">NO</span>';
+
+            }
+
+
+            fila.insertCell(4).innerHTML =
+                "Q" + total.toFixed(2);
+
+
+            
+
+            document.getElementById("galonesSuperior")
+                .innerHTML =
+                galonesSuperior.toFixed(2);
+
+
+            document.getElementById("galonesRegular")
+                .innerHTML =
+                galonesRegular.toFixed(2);
+
+
+            document.getElementById("galonesDiesel")
+                .innerHTML =
+                galonesDiesel.toFixed(2);
+
+
+            document.getElementById("ventaSuperior")
+                .innerHTML =
+                "Q" + ventaSuperior.toFixed(2);
+
+
+            document.getElementById("ventaRegular")
+                .innerHTML =
+                "Q" + ventaRegular.toFixed(2);
+
+
+            document.getElementById("ventaDiesel")
+                .innerHTML =
+                "Q" + ventaDiesel.toFixed(2);
+
+
+            document.getElementById("galonesSubsidio")
+                .innerHTML =
+                galonesSubsidio.toFixed(2);
+
+
+            document.getElementById("totalSubsidio")
+                .innerHTML =
+                "Q" + totalSubsidio.toFixed(2);
+
+
+            document.getElementById("totalGeneral")
+                .innerHTML =
+                "Q" + totalGeneral.toFixed(2);
+
+
+          
+
+            document.getElementById("galones").value = "";
+
+        }
+
+    </script>
+
+</body>
+</html>
